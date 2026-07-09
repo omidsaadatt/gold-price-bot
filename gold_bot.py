@@ -4,7 +4,7 @@ import jdatetime
 
 API_KEY = os.environ["GOLD_API_KEY"]
 BOT_TOKEN = os.environ["BOT_TOKEN"]
-CHANNEL_ID = "@goldentrend_online"   # یوزرنیم کانال خودت رو اینجا بذار
+CHANNEL_ID = "@my_channel"   # یوزرنیم کانال خودت رو اینجا بذار
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
@@ -25,11 +25,13 @@ def send_to_channel(gold_18k, gold_ounce, tether):
     date_str = now.strftime("%Y/%m/%d")
     time_str = now.strftime("%H:%M")
 
+    tether_price = int(float(tether["price"]))
+
     text = (
         f"💰 قیمت‌های لحظه‌ای\n\n"
         f"🔸 مظنه (انس جهانی): {gold_ounce['price']} دلار\n"
         f"🔸 طلای ۱۸ عیار: {gold_18k['price']:,} تومان\n"
-        f"🔸 تتر: {tether['price']:,} تومان\n\n"
+        f"🔸 تتر: {tether_price:,} تومان\n\n"
         f"🗓 تاریخ: {date_str} | ⏰ ساعت: {time_str}\n"
         f"📢 {CHANNEL_ID}"
     )
