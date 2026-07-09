@@ -4,7 +4,7 @@ import jdatetime
 
 API_KEY = os.environ["GOLD_API_KEY"]
 BOT_TOKEN = os.environ["BOT_TOKEN"]
-CHANNEL_ID = "@my_channel"   # یوزرنیم کانال خودت رو اینجا بذار
+CHANNEL_ID = "goldentrend_online"   # یوزرنیم کانال خودت رو اینجا بذار
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
