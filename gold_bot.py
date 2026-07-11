@@ -27,34 +27,4 @@ def calculate_bubble(gold_18k_price, ounce_price, usd_price):
     fair_24k_gram = (ounce_price * usd_price) / 31.1
     fair_18k_gram = fair_24k_gram * 0.75
     bubble_amount = gold_18k_price - fair_18k_gram
-    bubble_percent = (gold_18k_price / fair_18k_gram - 1) * 100
-    return round(bubble_amount), round(bubble_percent, 1)
-
-def send_to_channel(gold_18k, gold_melted, gold_ounce, coin_emami, tether, usd):
-    now = jdatetime.datetime.now()
-    date_str = now.strftime("%Y/%m/%d")
-    time_str = now.strftime("%H:%M")
-
-    tether_price = int(float(tether["price"]))
-    bubble_amount, bubble_percent = calculate_bubble(gold_18k["price"], gold_ounce["price"], usd["price"])
-    bubble_sign = "🟢+" if bubble_amount >= 0 else "🔴"
-
-    text = (
-        f"💰 قیمت‌های لحظه‌ای\n\n"
-        f"🔸 مظنه (انس جهانی): {gold_ounce['price']} دلار\n"
-        f"🔸 طلای ۱۸ عیار: {gold_18k['price']:,} تومان\n"
-        f"🔸 طلای آب‌شده: {gold_melted['price']:,} تومان\n"
-        f"🔸 سکه امامی: {coin_emami['price']:,} تومان\n"
-        f"🔸 حباب طلای ۱۸ عیار: {bubble_sign}{abs(bubble_amount):,} تومان ({bubble_percent}%)\n"
-        f"🔸 تتر: {tether_price:,} تومان\n\n"
-        f"🗓 تاریخ: {date_str} | ⏰ ساعت: {time_str}\n"
-        f"📢 {CHANNEL_ID}"
-    )
-
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    requests.post(url, data={"chat_id": CHANNEL_ID, "text": text})
-
-
-if __name__ == "__main__":
-    gold_18k, gold_melted, gold_ounce, coin_emami, tether, usd = get_prices()
-    send_to_channel(gold_18k, gold_melted, gold_ounce, coin_emami, tether, usd)
+    bubble_percent = (gold_18k_price / fair_18k_gram - 1) * 
