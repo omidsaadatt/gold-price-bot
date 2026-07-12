@@ -79,13 +79,25 @@ def calculate_rsi(closes, period=14):
     return 100 - (100 / (1 + rs))
 
 
-def send_debug_message(rsi_1min, rsi_5min, rsi_15min, last_price):
+def get_zone(rsi):
+    if rsi is None:
+        return "neutral"
+    if rsi <= 20:
+        return "oversold"
+    if rsi >= 80:
+        return "overbought"
+    return "neutral"
+
+
+def send_alert(timeframe, rsi, zone):
+    label = {"1min": "۱ دقیقه", "5min": "۵ دقیقه", "15min": "۱۵ دقیقه"}[timeframe]
+    zone_text = "🔴 اشباع فروش (Oversold)" if zone == "oversold" else "🟢 اشباع خرید (Overbought)"
+
     text = (
-        f"🧪 تست دیباگ RSI (نسخه‌ی موقت)\n\n"
-        f"💰 آخرین قیمت XAUUSD: {last_price}\n\n"
-        f"📊 RSI ۱ دقیقه: {round(rsi_1min, 2) if rsi_1min else 'نامشخص'}\n"
-        f"📊 RSI ۵ دقیقه: {round(rsi_5min, 2) if rsi_5min else 'نامشخص'}\n"
-        f"📊 RSI ۱۵ دقیقه: {round(rsi_15min, 2) if rsi_15min else 'نامشخص'}\n\n"
+        f"⚠️ هشدار RSI طلا (XAUUSD)\n\n"
+        f"⏱ تایم‌فریم: {label}\n"
+        f"📊 RSI: {round(rsi, 1)}\n"
+        f"{zone_text}\n\n"
         f"📢 {CHANNEL_ID}"
     )
 
@@ -94,19 +106,26 @@ def send_debug_message(rsi_1min, rsi_5min, rsi_15min, last_price):
 
 
 def main():
+    state = load_state()
     candles = get_1min_candles()
 
-    closes_1min = [c[1] for c in candles]
-    closes_5min = resample(candles, 5)
-    closes_15min = resample(candles, 15)
+    timeframes = {
+        "1min": [c[1] for c in candles],
+        "5min": resample(candles, 5),
+        "15min": resample(candles, 15),
+    }
 
-    rsi_1min = calculate_rsi(closes_1min)
-    rsi_5min = calculate_rsi(closes_5min)
-    rsi_15min = calculate_rsi(closes_15min)
+    for tf, closes in timeframes.items():
+        rsi = calculate_rsi(closes)
+        zone = get_zone(rsi)
 
-    last_price = closes_1min[-1] if closes_1min else "نامشخص"
+        if zone in ("oversold", "overbought") and state[tf] != zone:
+            send_alert(tf, rsi, zone)
+            state[tf] = zone
+        elif zone == "neutral" and state[tf] != "neutral":
+            state[tf] = "neutral"
 
-    send_debug_message(rsi_1min, rsi_5min, rsi_15min, last_price)
+    save_state(state)
 
 
 if __name__ == "__main__":
